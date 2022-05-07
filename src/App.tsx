@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Connect2Phantom from './components/Connect2Phantom';
+import HelloWorld from './components/HelloWorld';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
 
         <p>Hello there</p>
         <Connect2Phantom/>
+        <HelloWorld/>
 
       </header>
     </div>
