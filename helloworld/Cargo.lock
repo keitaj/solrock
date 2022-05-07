@@ -948,8 +948,6 @@ dependencies = [
 name = "helloworld"
 version = "0.0.1"
 dependencies = [
- "borsh",
- "borsh-derive",
  "solana-program",
  "solana-program-test",
  "solana-sdk",

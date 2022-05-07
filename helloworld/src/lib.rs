@@ -1,15 +1,11 @@
-use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
     entrypoint::ProgramResult,
     msg,
-    program_error::ProgramError,
     pubkey::Pubkey,
 };
 
-/// Define the type of state stored in accounts
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct GreetingAccount {
     /// number of greetings
     pub counter: u32,
@@ -24,7 +20,7 @@ pub fn process_instruction(
     accounts: &[AccountInfo], // The account to say hello to
     _instruction_data: &[u8], // Ignored, all helloworld instructions are hellos
 ) -> ProgramResult {
-    msg!("Hello World Rust program entrypoint");
+    msg!("Hello World Rust program entrypoint program_id:{}", program_id);
 
     // Iterating accounts is safer than indexing
     let accounts_iter = &mut accounts.iter();
@@ -32,18 +28,18 @@ pub fn process_instruction(
     // Get the account to say hello to
     let account = next_account_info(accounts_iter)?;
 
-    // The account must be owned by the program in order to modify its data
-    if account.owner != program_id {
-        msg!("Greeted account does not have the correct program id");
-        return Err(ProgramError::IncorrectProgramId);
-    }
+    // account info
+    msg!("account.key: {}", account.key);
+    msg!("account.is_signer: {}", account.is_signer);
+    msg!("account.is_writable: {}", account.is_writable);
+    msg!("account.owner: {}", account.owner);
+    msg!("account.data: {:?}", account.data);
+    msg!("account.lamports: {:?}", account.lamports);
+    msg!("account.executable: {}", account.executable);
+    msg!("account.rent_epoch: {}", account.rent_epoch);
 
-    // Increment and store the number of times the account has been greeted
-    let mut greeting_account = GreetingAccount::try_from_slice(&account.data.borrow())?;
-    greeting_account.counter += 1;
-    greeting_account.serialize(&mut &mut account.data.borrow_mut()[..])?;
-
-    msg!("Greeted {} time(s)!", greeting_account.counter);
+    // instruction_data info
+    msg!("_instruction_data: {:?}", _instruction_data);
 
     Ok(())
 }
@@ -76,25 +72,6 @@ mod test {
 
         let accounts = vec![account];
 
-        assert_eq!(
-            GreetingAccount::try_from_slice(&accounts[0].data.borrow())
-                .unwrap()
-                .counter,
-            0
-        );
         process_instruction(&program_id, &accounts, &instruction_data).unwrap();
-        assert_eq!(
-            GreetingAccount::try_from_slice(&accounts[0].data.borrow())
-                .unwrap()
-                .counter,
-            1
-        );
-        process_instruction(&program_id, &accounts, &instruction_data).unwrap();
-        assert_eq!(
-            GreetingAccount::try_from_slice(&accounts[0].data.borrow())
-                .unwrap()
-                .counter,
-            2
-        );
     }
 }
